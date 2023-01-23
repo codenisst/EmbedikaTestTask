@@ -3,19 +3,18 @@
 # https://www.playframework.com/documentation/latest/ScalaRouting
 # ~~~~
 
-# статистика по загруженным данным(): json с полями всего записей
-# (200 - найдено(json-результат запроса))
-GET /oil    controllers.OilPriceController.getStatistics()
-
 # получить цену нефти за эту дату - возвращает значение цены
-# (200 - найдено(значение - результат запроса), 404 - не найдено/неверно составлен запрос)
+# (200 - найдено(значение - результат запроса), 404/400 - не найдено/неверно составлен запрос)
 GET /oil/price  controllers.OilPriceController.getPriceByDate(from: String)
 
 # средняя цена за промежуток времени(диапазон дат): значение цены
-# (200 - найдено(значение - результат запроса), 404 - не найдено/неверно составлен запрос)
+# (200 - найдено(значение - результат запроса))
 GET /oil/average-price  controllers.OilPriceController.getAveragePriceByRange(from: String, to: String)
 
 # максимальная и минимальная цены за промежуток времени(диапазон дат): json с полями min и max
-# (200 - найдено(json{max, min} - результат запроса), 404 - не найдено/неверно составлен запрос)
+# (200 - найдено(json{max, min} - результат запроса))
 GET /oil/max-min-prices  controllers.OilPriceController.getMaxAndMinPricesByDateRange(from: String, to: String)
 
+# статистика по загруженным данным(): json с полями всего записей
+# (200 - найдено(json-результат запроса))
+GET /oil    controllers.OilPriceController.getStatistics()

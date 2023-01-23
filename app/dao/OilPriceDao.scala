@@ -20,4 +20,14 @@ class OilPriceDao {
     val query = oilPriceTable ++= list
     db.run(query)
   }
+
+  def getPriceByDate(date: Int): Future[Seq[Double]] = {
+    val query = oilPriceTable.filter(_.fromDate <= date).filter(_.toDate >= date).map(_.price).result
+    db.run(query)
+  }
+
+  def getPricesByRange(fromDate: Int, toDate: Int): Future[Seq[Double]] = {
+    val query = oilPriceTable.filter(_.fromDate >= fromDate).filter(_.toDate <= toDate).map(_.price).result
+    db.run(query)
+  }
 }
