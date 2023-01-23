@@ -40,8 +40,6 @@ class OilPriceController @Inject()(val ws: WSClient,
       val fromDate = formatterFromRequest.format(parserFromRequest.parse(from)).toInt
       val toDate = formatterFromRequest.format(parserFromRequest.parse(to)).toInt
 
-      println(toDate)
-
       oilPriceService.getAvePriceByRange(fromDate, toDate).map(price => Ok(price.toString))
     } catch {
       case _: ParseException => Future {
