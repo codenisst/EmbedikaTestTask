@@ -54,8 +54,8 @@ class OilPriceController @Inject()(val ws: WSClient,
       val fromDate = formatterFromRequest.format(parserFromRequest.parse(from)).toInt
       val toDate = formatterFromRequest.format(parserFromRequest.parse(to)).toInt
 
-      oilPriceService.getMaxAndMinPriceByRange(fromDate, toDate).map(list =>
-        Ok(Json.parse("""{"max":""" + list.head + """, "min":""" + list.last + """}""")))
+      oilPriceService.getMaxAndMinPriceByRange(fromDate, toDate).map(minMaxPrice =>
+        Ok(Json.toJson(minMaxPrice)))
     } catch {
       case _: ParseException => Future {
         BadRequest("Invalid request parameters")
@@ -66,13 +66,13 @@ class OilPriceController @Inject()(val ws: WSClient,
   // возвращает статистику по данных. Общее число записей
   def getStatistics(): Action[AnyContent] = Action.async {
     val futureStat = oilPriceService.getStats()
-    futureStat.map(quantity => Ok(Json.parse("""{"total":""" + quantity.toString + """}""")))
+    futureStat.map(quantity => Ok(Json.toJson(quantity)))
   }
 
   // загружает данные при запуске
   private def loadDataIfMissing(): Unit = {
     oilPriceService.getStats().map(quantity =>
-      if (quantity == 0) {
+      if (quantity.total == 0) {
         val locale: Locale = new Locale("ru", "RU")
         val dfs: DateFormatSymbols = DateFormatSymbols.getInstance(locale)
         val arrayString: Array[String] =

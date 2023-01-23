@@ -1,7 +1,7 @@
 package services
 
 import dao.OilPriceDao
-import models.OilPrice
+import models.{MinMaxPrice, OilPrice, TotalPrice}
 
 import javax.inject.Singleton
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -11,8 +11,8 @@ import scala.math.BigDecimal.RoundingMode
 @Singleton
 class OilPriceService(private val oilPriceDao: OilPriceDao = new OilPriceDao) {
 
-  def getStats(): Future[Int] = {
-    oilPriceDao.getStatsFromDb()
+  def getStats(): Future[TotalPrice] = {
+    oilPriceDao.getStatsFromDb().map(total => TotalPrice(total))
   }
 
   def loadPrices(dataList: List[OilPrice]): Unit = {
@@ -37,12 +37,12 @@ class OilPriceService(private val oilPriceDao: OilPriceDao = new OilPriceDao) {
     })
   }
 
-  def getMaxAndMinPriceByRange(fromDate: Int, toDate: Int): Future[List[Double]] = {
+  def getMaxAndMinPriceByRange(fromDate: Int, toDate: Int): Future[MinMaxPrice] = {
     oilPriceDao.getPricesByRange(fromDate, toDate).map(seq => {
       if (seq.nonEmpty) {
-        List().::(seq.min).::(seq.max)
+        MinMaxPrice(seq.max, seq.min)
       } else {
-        List().::(0.0).::(0.0)
+        MinMaxPrice(0.0, 0.0)
       }
     })
   }
